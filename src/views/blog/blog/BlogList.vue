@@ -3,8 +3,8 @@
 		<!--搜索-->
 		<el-row>
 			<el-col :span="8">
-				<el-input placeholder="请输入标题" v-model="queryInfo.title" :clearable="true" @clear="search" @keyup.native.enter="search" size="small" style="min-width: 500px">
-					<el-select v-model="queryInfo.categoryId" slot="prepend" placeholder="请选择分类" :clearable="true" @change="search" style="width: 160px">
+				<el-input placeholder="请输入标题" v-model="query.title" :clearable="true" @clear="search" @keyup.native.enter="search" size="small" style="min-width: 500px">
+					<el-select v-model="query.categoryId" slot="prepend" placeholder="请选择分类" :clearable="true" @change="search" style="width: 160px">
 						<el-option :label="item.name" :value="item.id" v-for="item in categoryList" :key="item.id"></el-option>
 					</el-select>
 					<el-button slot="append" icon="el-icon-search" @click="search"></el-button>
@@ -50,8 +50,8 @@
 		</el-table>
 
 		<!--分页-->
-		<el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="queryInfo.pageNum"
-		               :page-sizes="[10, 20, 30, 50]" :page-size="queryInfo.pageSize" :total="total"
+		<el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="query.pageNum"
+		               :page-sizes="[10, 20, 30, 50]" :page-size="query.pageSize" :total="total"
 		               layout="total, sizes, prev, pager, next, jumper" background>
 		</el-pagination>
 
@@ -104,11 +104,11 @@
 		components: {Breadcrumb},
 		data() {
 			return {
-				queryInfo: {
+				query: {
 					title: '',
 					categoryId: null,
-					pageNum: 1,
-					pageSize: 10
+					current: 1,
+					size: 10
 				},
 				blogList: [],
 				categoryList: [],
@@ -131,15 +131,15 @@
 		},
 		methods: {
 			getData() {
-				getDataByQuery(this.queryInfo).then(res => {
-					this.blogList = res.data.blogs.list
-					this.categoryList = res.data.categories
-					this.total = res.data.blogs.total
+				getDataByQuery(this.query).then((res, extra) => {
+					this.blogList = res.data.records
+					this.categoryList = extra
+					this.total = res.data.total
 				})
 			},
 			search() {
-				this.queryInfo.pageNum = 1
-				this.queryInfo.pageSize = 10
+				this.query.pageNum = 1
+				this.query.pageSize = 10
 				this.getData()
 			},
 			//切换博客置顶状态
@@ -193,12 +193,12 @@
 			},
 			//监听 pageSize 改变事件
 			handleSizeChange(newSize) {
-				this.queryInfo.pageSize = newSize
+				this.query.pageSize = newSize
 				this.getData()
 			},
 			//监听页码改变的事件
 			handleCurrentChange(newPage) {
-				this.queryInfo.pageNum = newPage
+				this.query.pageNum = newPage
 				this.getData()
 			},
 			goBlogEditPage(id) {

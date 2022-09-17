@@ -1,11 +1,11 @@
 import axios from '@/util/request'
 
-export function getDataByQuery(queryInfo) {
+export function getDataByQuery(query) {
 	return axios({
 		url: 'blogs',
-		method: 'GET',
-		params: {
-			...queryInfo
+		method: 'post',
+		data: {
+			...query
 		}
 	})
 }
